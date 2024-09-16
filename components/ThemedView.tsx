@@ -1,14 +1,9 @@
-import { View, type ViewProps } from 'react-native';
+import { View, type ViewProps } from "react-native";
 
-import { useThemeColor } from '@/hooks/useThemeColor';
-
-export type ThemedViewProps = ViewProps & {
-  lightColor?: string;
-  darkColor?: string;
-};
-
-export function ThemedView({ style, lightColor, darkColor, ...otherProps }: ThemedViewProps) {
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
-
-  return <View style={[{ backgroundColor }, style]} {...otherProps} />;
+export function ThemedView({ className, children, ...rest }: ViewProps) {
+	return (
+		<View className="px-6 py-5 flex flex-1 bg-[#CFFAFE] items-center" {...rest}>
+			<View className="max-w-[385px] flex flex-1 w-full">{children}</View>
+		</View>
+	);
 }
