@@ -2,8 +2,11 @@ import { AppContext } from "@/components/AppProvider";
 import { CustomModal } from "@/components/CustomModals";
 import { DoseButtons } from "@/components/DoseButton";
 import { Header } from "@/components/Header";
+import { ImportanceModal } from "@/components/ImportanceModal";
 import { RecordsTable } from "@/components/RecordsTable";
 import { ThemedView } from "@/components/ThemedView";
+import { Box } from "@/components/ui/box";
+import { Button, ButtonText } from "@/components/ui/button";
 import { Divider } from "@/components/ui/divider";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
@@ -13,9 +16,11 @@ import { SkeletonText } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { UpdateGoal } from "@/components/UpdateGoal";
 import type { GetDoseById } from "@/services/schemas/dose/GetDoseById";
 import { cn } from "@/utils/cn";
-import { GlassWaterIcon, X } from "lucide-react-native";
+import { CalendarIcon, GlassWaterIcon, X } from "lucide-react-native";
+import { Dimensions, ScrollView, View } from "react-native";
 import { useContextSelector } from "use-context-selector";
 
 type GoalData = {
@@ -28,7 +33,7 @@ type GoalData = {
 };
 
 export default function HomeScreen() {
-	const { daily, isLoading, isError, isFulfilled } = useContextSelector(
+	/* const { daily, isLoading, isError, isFulfilled } = useContextSelector(
 		AppContext,
 		(context) => ({
 			daily: context?.daily,
@@ -36,184 +41,186 @@ export default function HomeScreen() {
 			isError: context?.isError,
 			isFulfilled: context?.daily?.fulfilled,
 		}),
-	);
+	); */
+
+	const { isError, isFulfilled, isLoading, daily } = {
+		isError: false,
+		isFulfilled: false,
+		isLoading: false,
+		daily: {
+			id: 1,
+			goal: 400,
+			current: { dose: 200, percentage: 30 },
+			date: "",
+			fulfilled: false,
+			doses: [],
+		},
+	};
+
+	const HISTORY_HEIGHT = Dimensions.get("window").height / 4;
 
 	return (
-		<ThemedView className="relative">
-			<VStack space="xl">
-				<Header />
+		<ThemedView>
+			<Box className='flex flex-col gap-3 min-w-[240px] max-w-[400px] w-full mx-auto'>
+				<Box className='flex flex-row items-center gap-2'>
+					<Icon as={CalendarIcon} size='md' className='text-cyan-900' />
 
-				<VStack
-					space="xs"
-					className={cn(
-						"rounded-lg p-2 pb-4 px-4 border-2 border-theme-text bg-white/90",
-						isError && "border-red-500 bg-red-50",
-						isFulfilled && "border-green-800 bg-green-50",
-					)}
-				>
-					{isLoading && <SkeletonText className="h-6 w-2/3" />}
+					<Text
+						style={{ fontFamily: "Inter" }}
+						className='text-sm lg:text-base text-cyan-900 h-min'
+					>
+						Domingo, 8 de Dezembro de 2024
+					</Text>
+				</Box>
 
-					{!isLoading && isError && (
-						<Heading className="text-red-600">Opa! Erro de servidor!</Heading>
-					)}
+				<Box className='flex gap-2 border border-cyan-800 px-2 py-1.5 rounded'>
+					<Text
+						style={{ fontFamily: "Inter" }}
+						className='text-sm lg:text-base text-cyan-800'
+					>
+						Carregando dados...
+					</Text>
 
-					{!isLoading && !isError && (
-						<Heading
-							className={isFulfilled ? "text-green-900" : "text-theme-dark"}
-						>
-							{isFulfilled ? "Meta atingida!" : "Como está a sua meta hoje?"}
-						</Heading>
-					)}
-
-					<Divider
-						className={cn(
-							"bg-theme-dark/10",
-							isError && "bg-red-600/10",
-							isFulfilled && "bg-green-900/10",
-						)}
-					/>
-
-					<HStack space="xl" className="items-center">
-						{isLoading && <Spinner size={"large"} />}
-						{!isLoading && isError && (
-							<Icon
-								as={X}
-								size="lg"
-								className="text-red-600 w-6 h-6 items-center justify-center flex align-middle"
-							/>
-						)}
-
-						{!isLoading && !isError && (
-							<VStack
-								space="sm"
-								className="items-center align-middle text-center"
-							>
+					<Box className='flex flex-row gap-2'>
+						<Box className='relative'>
+							<Box className='flex flex-col gap-1.5 max-w-[40px]'>
 								<Icon
 									as={GlassWaterIcon}
-									className={cn(
-										"text-theme-dark h-8 w-7",
-										isFulfilled && "text-green-900",
-									)}
+									className={"text-cyan-900 h-9 w-full"}
 								/>
+								<Icon as={X} className={"absolute h-3 bottom-0 -right-1"} />
+							</Box>
 
-								<Progress
-									value={46}
-									orientation="horizontal"
-									className={cn(
-										"h-2 bg-theme-dark/10",
-										isFulfilled && "bg-green-900/10",
-									)}
-									size="sm"
-								>
-									<ProgressFilledTrack
-										className={cn(
-											"bg-theme-dark",
-											isFulfilled && "bg-green-900",
-										)}
-									/>
-								</Progress>
-							</VStack>
-						)}
+							<SkeletonText className='h-[8px] rounded-full w-full' />
 
-						<VStack space="sm" className="w-full">
-							<VStack className={cn(isLoading && "gap-0.5")}>
-								{isLoading && <SkeletonText className="h-5 w-2/3" />}
+							<Progress
+								value={46}
+								orientation='horizontal'
+								className={"h-1.5 bg-theme-dark/10"}
+								size='sm'
+							>
+								<ProgressFilledTrack className={"bg-cyan-900"} />
+							</Progress>
+						</Box>
+						<Box>
+							<SkeletonText className='h-4 mb-1 w-full' />
+							<SkeletonText className='h-3 w-[80%]' />
 
-								{!isLoading && isError && (
-									<Heading size="sm" className="text-red-600">
-										Erro
-									</Heading>
-								)}
-
-								{!isLoading && !isError && (
-									<Heading
-										size="sm"
-										className={
-											isFulfilled ? "text-green-900" : "text-theme-dark"
-										}
-									>
-										{isFulfilled ? "100% meta!" : `Você atingiu ${1}%`}
-									</Heading>
-								)}
-
-								{isLoading && <SkeletonText className="h-4 w-3/4" />}
-
-								{!isLoading && isError && (
-									<Text size="sm" className="text-red-600">
-										Erro nos dados
-									</Text>
-								)}
-
-								{!isLoading &&
-									!isError &&
-									!isFulfilled &&
-									daily &&
-									daily.goal && (
-										<Text className={cn("text-theme-text")} size="xs">
-											Faltam{" "}
-											{daily?.goal - daily?.goal * daily?.current.percentage}mls
-											para o seu objetivo
-										</Text>
-									)}
-							</VStack>
-
-							{isLoading && <SkeletonText className="h-4 w-2/5" />}
-
-							{!isLoading && !isError && (
-								<HStack className="items-center" space="sm">
-									<Text
-										className={cn(
-											"text-theme-text",
-											isFulfilled && "text-green-900",
-										)}
-										size="sm"
-									>
-										Atual:
-									</Text>
-									<Text
-										className={cn(
-											"text-theme-text",
-											isFulfilled && "text-green-900",
-										)}
-										size="sm"
-									>
-										{daily?.current.dose}mls
-									</Text>
-								</HStack>
-							)}
-						</VStack>
-					</HStack>
-				</VStack>
-
-				<Divider className="bg-theme-dark/10" />
-
-				<VStack space="md">
-					<VStack>
-						<HStack className="w-full justify-between items-center">
-							<Heading className="text-theme-dark">
-								Continue se hidratando!
+							<Heading
+								style={{ fontFamily: "Inter" }}
+								className='font-normal text-sm text-cyan-900'
+							>
+								Faltam 1.675mls
 							</Heading>
+							<Text
+								style={{ fontFamily: "Inter" }}
+								className='text-xs text-cyan-900/70'
+							>
+								Mantenha o ritmo!
+							</Text>
+						</Box>
+					</Box>
+				</Box>
 
-							<CustomModal.Dosage />
-						</HStack>
-						<Text size="xs" className="text-theme-text">
-							Clique em uma dose
+				<Divider />
+
+				<Box className='flex flex-row justify-between align-middle'>
+					<Box className='flex flex-row gap-2 items-center'>
+						<Text
+							style={{ fontFamily: "Inter" }}
+							className='text-sm lg:text-base text-cyan-900 h-min'
+						>
+							Meta atual:
 						</Text>
-					</VStack>
+						<Text
+							style={{ fontFamily: "Inter" }}
+							className='text-sm lg:text-base text-cyan-800/90 h-min'
+						>
+							3.000ml
+						</Text>
+					</Box>
+					<UpdateGoal />
+				</Box>
 
-					<DoseButtons isLoading={false} isError={false} />
-				</VStack>
+				<Divider />
 
-				<Divider className="bg-theme-dark/10" />
+				<Box className='flex flex-col gap-2.5'>
+					<Box>
+						<Text
+							style={{ fontFamily: "Inter" }}
+							className='text-sm lg:text-base text-cyan-900 h-min'
+						>
+							Hidrate-se
+						</Text>
+						<Text
+							style={{ fontFamily: "Inter" }}
+							className='text-[13px] text-cyan-900/70'
+						>
+							Insira suas doses
+						</Text>
+					</Box>
 
-				<RecordsTable
-					isLoading={false}
-					isError={false}
-					records={daily?.doses}
-				/>
-			</VStack>
+					<Box className='flex flex-row justify-between'>
+						<Button className=' bg-gradient-to-r from-cyan-800 to-cyan-900 h-8'>
+							<ButtonText
+								style={{ fontFamily: "Inter" }}
+								className='text-white text-xs font-medium'
+							>
+								+50 ml
+							</ButtonText>
+						</Button>
+						<Button className=' bg-gradient-to-r from-cyan-800 to-cyan-900 h-8'>
+							<ButtonText
+								style={{ fontFamily: "Inter" }}
+								className='text-white text-xs font-medium'
+							>
+								+100 ml
+							</ButtonText>
+						</Button>
+						<Button className='bg-gradient-to-r from-cyan-800 to-cyan-900 h-8'>
+							<ButtonText
+								style={{ fontFamily: "Inter" }}
+								className='text-white text-xs font-medium'
+							>
+								+250 ml
+							</ButtonText>
+						</Button>
+					</Box>
+				</Box>
 
-			<CustomModal.Drink />
+				<Divider />
+			</Box>
+			<Box className='min-w-[240px] max-w-[400px] w-full mx-auto mt-2'>
+				<Text
+					style={{ fontFamily: "Inter" }}
+					className='text-sm lg:text-base text-cyan-900 h-min'
+				>
+					Registros
+				</Text>
+
+				<ScrollView style={{ maxHeight: HISTORY_HEIGHT }}>
+					{Array.from({ length: 20 }, (_, index) => (
+						<Box className='flex flex-row justify-between items-center'>
+							<Text
+								key={index}
+								style={{ fontFamily: "Inter" }}
+								className='text-sm py-0.5'
+							>
+								Teste {index + 1}
+							</Text>
+							<Text
+								key={index + 1}
+								style={{ fontFamily: "Inter" }}
+								className='text-[13px] py-0.5 mr-1'
+							>
+								10/01/2024
+							</Text>
+						</Box>
+					))}
+				</ScrollView>
+			</Box>
+
+			<ImportanceModal />
 		</ThemedView>
 	);
 }

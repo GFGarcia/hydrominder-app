@@ -1,6 +1,5 @@
 import { Tabs } from "expo-router";
 import React from "react";
-
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 
@@ -16,9 +15,22 @@ export default function TabLayout() {
 			}}
 		>
 			<Tabs.Screen
-				name="index"
+				name='index'
 				options={{
 					title: "Home",
+					tabBarIcon: ({ color, focused }) => (
+						<TabBarIcon
+							size={18}
+							name={focused ? "home" : "home-outline"}
+							color={color}
+						/>
+					),
+				}}
+			/>
+			<Tabs.Screen
+				name='monitoring'
+				options={{
+					title: "Monitoramento",
 					tabBarIcon: ({ color, focused }) => (
 						<TabBarIcon
 							size={18}

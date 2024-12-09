@@ -1,18 +1,19 @@
 import { Heading } from "./ui/heading";
 import { HStack } from "./ui/hstack";
-import { Image } from "./ui/image";
-import HydroLogo from "@assets/images/hydro-logo.png";
+import { Image } from "react-native";
+
+const IMAGE_URI = "@assets/images/logo.svg";
 
 export function Header() {
 	return (
-		<HStack className="items-center" space="sm">
+		<HStack className='items-center px-6 py-2 bg-gradient-to-r from-cyan-700 to-cyan-900 gap-3'>
 			<Image
-				source={HydroLogo}
-				size="xs"
-				alt="Hydrominder logo"
-				className="w-4 h-5"
+				source={require(IMAGE_URI)}
+				alt='Hydrominder logo'
+				className='w-4 h-5 lg:w-6 lg:h-7 overflow-visible'
 			/>
-			<Heading size="md" className="text-theme-dark">
+
+			<Heading style={{ fontFamily: "Inter" }} size='md' className='text-white'>
 				Hydrominder
 			</Heading>
 		</HStack>

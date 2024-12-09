@@ -1,5 +1,5 @@
 export const KEYS_ENUM = {
-	DAILY: "daily",
+	TODAY: "today",
 	DOSE: "dose",
-	GOALS: "goals",
+	GOAL: "goal",
 };

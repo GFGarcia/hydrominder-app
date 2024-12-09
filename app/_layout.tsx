@@ -7,33 +7,40 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppProvider } from "@/components/AppProvider";
+import {
+	Inter_300Light,
+	Inter_400Regular,
+	Inter_600SemiBold,
+} from "@expo-google-fonts/inter";
 
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
-	const [loaded] = useFonts({
-		SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+	const [fontsLoaded] = useFonts({
+		Inter_300Light,
+		Inter_400Regular,
+		Inter_600SemiBold,
 	});
 
 	useEffect(() => {
-		if (loaded) {
+		if (fontsLoaded) {
 			SplashScreen.hideAsync();
 		}
-	}, [loaded]);
+	}, [fontsLoaded]);
 
-	if (!loaded) {
+	if (!fontsLoaded) {
 		return null;
 	}
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<GluestackUIProvider mode="light">
+			<GluestackUIProvider mode='light'>
 				<AppProvider>
 					<Stack>
-						<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-						<Stack.Screen name="+not-found" />
+						<Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+						<Stack.Screen name='+not-found' />
 					</Stack>
 				</AppProvider>
 			</GluestackUIProvider>

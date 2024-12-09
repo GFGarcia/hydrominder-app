@@ -9,8 +9,24 @@ export const GetTodayGoalApiResponseSchema = z.object({
 		percentage: z.number(),
 	}),
 	date: z.string().transform((value) => value.split(" ")[0]),
-	fulfilled: z.boolean(),
-	doses: z.array(GetDoseByIdApiResponseSchema),
+	doses: z.array(
+		z
+			.object({
+				idDose: z.number(),
+				mls: z.number(),
+				date: z.string(),
+			})
+			.transform((data) => {
+				const [date, time] = data.date.split(" ");
+
+				return {
+					id: data.idDose,
+					mls: data.mls,
+					time,
+					date,
+				};
+			})
+	),
 });
 
 export type GetTodayGoalApiResponse = z.infer<
