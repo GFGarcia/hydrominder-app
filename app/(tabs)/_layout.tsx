@@ -27,19 +27,6 @@ export default function TabLayout() {
 					),
 				}}
 			/>
-			<Tabs.Screen
-				name='monitoring'
-				options={{
-					title: "Monitoramento",
-					tabBarIcon: ({ color, focused }) => (
-						<TabBarIcon
-							size={18}
-							name={focused ? "home" : "home-outline"}
-							color={color}
-						/>
-					),
-				}}
-			/>
 		</Tabs>
 	);
 }

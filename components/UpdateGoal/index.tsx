@@ -108,11 +108,22 @@ export function UpdateGoal() {
 						<Text style={{ fontFamily: "Inter" }} className='text-sm'>
 							Sua meta atual: {goal.current}ml
 						</Text>
-						<InputField
-							type='text'
-							value={String(goal.current)}
-							onChangeText={handler.changeInput}
-						/>
+
+						<Box>
+							<InputField
+								type='text'
+								value={String(goal.current)}
+								onChangeText={handler.changeInput}
+							/>
+							{goal.error && (
+								<Text
+									style={{ fontFamily: "Inter" }}
+									className='text-[10px] text-error-200'
+								>
+									{goal.error}
+								</Text>
+							)}
+						</Box>
 
 						<Divider />
 

@@ -1,7 +1,7 @@
 import { KEYS_ENUM } from "@/constants/Keys";
-import { getAllGoals, getTodayGoal } from "@/services/api/goal";
+import { getTodayGoal } from "@/services/api/goal";
 import type { GetTodayGoalApiResponse } from "@/services/schemas/goal/GetTodayGoal";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import type { PropsWithChildren } from "react";
 import { createContext } from "use-context-selector";
 

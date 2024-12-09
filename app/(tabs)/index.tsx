@@ -1,27 +1,22 @@
-import { AppContext } from "@/components/AppProvider";
-import { CustomModal } from "@/components/CustomModals";
-import { DoseButtons } from "@/components/DoseButton";
-import { Header } from "@/components/Header";
 import { ImportanceModal } from "@/components/ImportanceModal";
-import { RecordsTable } from "@/components/RecordsTable";
 import { ThemedView } from "@/components/ThemedView";
 import { Box } from "@/components/ui/box";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Divider } from "@/components/ui/divider";
 import { Heading } from "@/components/ui/heading";
-import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
 import { Progress, ProgressFilledTrack } from "@/components/ui/progress";
 import { SkeletonText } from "@/components/ui/skeleton";
-import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
-import { VStack } from "@/components/ui/vstack";
 import { UpdateGoal } from "@/components/UpdateGoal";
 import type { GetDoseById } from "@/services/schemas/dose/GetDoseById";
-import { cn } from "@/utils/cn";
-import { CalendarIcon, GlassWaterIcon, X } from "lucide-react-native";
-import { Dimensions, ScrollView, View } from "react-native";
-import { useContextSelector } from "use-context-selector";
+import {
+	CalendarIcon,
+	GlassWaterIcon,
+	X,
+	MilkOffIcon,
+} from "lucide-react-native";
+import { Dimensions, ScrollView } from "react-native";
 
 type GoalData = {
 	id: number;
@@ -88,7 +83,10 @@ export default function HomeScreen() {
 									as={GlassWaterIcon}
 									className={"text-cyan-900 h-9 w-full"}
 								/>
-								<Icon as={X} className={"absolute h-3 bottom-0 -right-1"} />
+								<Icon
+									as={X}
+									className={"text-red-400 absolute h-3 bottom-0 -right-1"}
+								/>
 							</Box>
 
 							<SkeletonText className='h-[8px] rounded-full w-full' />
@@ -197,9 +195,25 @@ export default function HomeScreen() {
 				>
 					Registros
 				</Text>
+				<Box className='flex flex-col items-center'>
+					<Icon
+						as={MilkOffIcon}
+						size='md'
+						className='text-cyan-900 opacity-20'
+					/>
+					<Text style={{ fontFamily: "Inter" }} className='text-cyan-900'>
+						Sem registros por hoje...
+					</Text>
+					<Text
+						style={{ fontFamily: "Inter" }}
+						className='text-cyan-900/60 text-sm'
+					>
+						Você está se hidratando?
+					</Text>
+				</Box>
 
 				<ScrollView style={{ maxHeight: HISTORY_HEIGHT }}>
-					{Array.from({ length: 20 }, (_, index) => (
+					{/* {Array.from({ length: 20 }, (_, index) => (
 						<Box className='flex flex-row justify-between items-center'>
 							<Text
 								key={index}
@@ -208,15 +222,20 @@ export default function HomeScreen() {
 							>
 								Teste {index + 1}
 							</Text>
+							<Box className="flex flex-row gap-2 items-center">
+							
 							<Text
-								key={index + 1}
-								style={{ fontFamily: "Inter" }}
-								className='text-[13px] py-0.5 mr-1'
+							key={index + 1}
+							style={{ fontFamily: "Inter" }}
+							className='text-[13px] py-0.5 mr-1'
 							>
-								10/01/2024
+							10/01/2024
 							</Text>
+
+
+							</Box>
 						</Box>
-					))}
+					))} */}
 				</ScrollView>
 			</Box>
 
