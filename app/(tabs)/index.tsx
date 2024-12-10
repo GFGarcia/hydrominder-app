@@ -1,7 +1,8 @@
+import { AppContext } from "@/components/AppProvider";
 import { ImportanceModal } from "@/components/ImportanceModal";
 import { ThemedView } from "@/components/ThemedView";
 import { Box } from "@/components/ui/box";
-import { Button, ButtonText } from "@/components/ui/button";
+import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { Divider } from "@/components/ui/divider";
 import { Heading } from "@/components/ui/heading";
 import { Icon } from "@/components/ui/icon";
@@ -10,13 +11,17 @@ import { SkeletonText } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { UpdateGoal } from "@/components/UpdateGoal";
 import type { GetDoseById } from "@/services/schemas/dose/GetDoseById";
+import { cn } from "@/utils/cn";
+import { getFormattedCurrentDay } from "@/utils/getFormattedCurrentDay";
 import {
 	CalendarIcon,
 	GlassWaterIcon,
 	X,
 	MilkOffIcon,
+	Trash,
 } from "lucide-react-native";
 import { Dimensions, ScrollView } from "react-native";
+import { useContextSelector } from "use-context-selector";
 
 type GoalData = {
 	id: number;
@@ -28,29 +33,19 @@ type GoalData = {
 };
 
 export default function HomeScreen() {
-	/* const { daily, isLoading, isError, isFulfilled } = useContextSelector(
+	const { data, handler, state } = useContextSelector(
 		AppContext,
-		(context) => ({
-			daily: context?.daily,
-			isLoading: context?.isLoading,
-			isError: context?.isError,
-			isFulfilled: context?.daily?.fulfilled,
-		}),
-	); */
-
-	const { isError, isFulfilled, isLoading, daily } = {
-		isError: false,
-		isFulfilled: false,
-		isLoading: false,
-		daily: {
-			id: 1,
-			goal: 400,
-			current: { dose: 200, percentage: 30 },
-			date: "",
-			fulfilled: false,
-			doses: [],
-		},
-	};
+		({ data, mutation, state }) => ({
+			data,
+			state,
+			handler: {
+				dose: {
+					add: mutation.dose.add,
+					delete: mutation.dose.delete,
+				},
+			},
+		})
+	);
 
 	const HISTORY_HEIGHT = Dimensions.get("window").height / 4;
 
@@ -64,58 +59,82 @@ export default function HomeScreen() {
 						style={{ fontFamily: "Inter" }}
 						className='text-sm lg:text-base text-cyan-900 h-min'
 					>
-						Domingo, 8 de Dezembro de 2024
+						{getFormattedCurrentDay()}
 					</Text>
 				</Box>
 
 				<Box className='flex gap-2 border border-cyan-800 px-2 py-1.5 rounded'>
-					<Text
-						style={{ fontFamily: "Inter" }}
-						className='text-sm lg:text-base text-cyan-800'
-					>
-						Carregando dados...
-					</Text>
+					{state.isLoading && (
+						<Text
+							style={{ fontFamily: "Inter" }}
+							className='text-sm lg:text-base text-cyan-800'
+						>
+							Carregando dados...
+						</Text>
+					)}
 
 					<Box className='flex flex-row gap-2'>
 						<Box className='relative'>
 							<Box className='flex flex-col gap-1.5 max-w-[40px]'>
 								<Icon
 									as={GlassWaterIcon}
-									className={"text-cyan-900 h-9 w-full"}
+									className={cn(
+										"text-cyan-900 h-9 w-full",
+										state.isError && "text-red-700"
+									)}
 								/>
-								<Icon
-									as={X}
-									className={"text-red-400 absolute h-3 bottom-0 -right-1"}
-								/>
+								{state.isError && (
+									<Icon
+										as={X}
+										className={"text-red-600 absolute h-3 bottom-0 -right-1"}
+									/>
+								)}
 							</Box>
 
-							<SkeletonText className='h-[8px] rounded-full w-full' />
+							{state.isLoading && (
+								<SkeletonText className='h-[8px] rounded-full w-full' />
+							)}
 
 							<Progress
 								value={46}
 								orientation='horizontal'
-								className={"h-1.5 bg-theme-dark/10"}
+								className={cn(
+									"h-1.5 bg-theme-dark/10",
+									state.isError && "bg-red-100"
+								)}
 								size='sm'
 							>
-								<ProgressFilledTrack className={"bg-cyan-900"} />
+								<ProgressFilledTrack
+									className={cn("bg-cyan-900", state.isError && "bg-red-500")}
+								/>
 							</Progress>
 						</Box>
 						<Box>
-							<SkeletonText className='h-4 mb-1 w-full' />
-							<SkeletonText className='h-3 w-[80%]' />
+							{state.isLoading && (
+								<>
+									<SkeletonText className='h-4 mb-1 w-full' />
+									<SkeletonText className='h-3 w-[80%]' />
+								</>
+							)}
 
-							<Heading
-								style={{ fontFamily: "Inter" }}
-								className='font-normal text-sm text-cyan-900'
-							>
-								Faltam 1.675mls
-							</Heading>
-							<Text
-								style={{ fontFamily: "Inter" }}
-								className='text-xs text-cyan-900/70'
-							>
-								Mantenha o ritmo!
-							</Text>
+							{!state.isLoading && !state.isError && data && (
+								<>
+									<Heading
+										style={{ fontFamily: "Inter" }}
+										className={"font-normal text-sm text-cyan-900"}
+									>
+										{data.remaining > 0
+											? `Faltam ${data.remaining}mls`
+											: "Meta atingida!"}
+									</Heading>
+									<Text
+										style={{ fontFamily: "Inter" }}
+										className='text-xs text-cyan-900/70'
+									>
+										{data.remaining > 0 ? "Mantenha o ritmo!" : "Parabéns!"}
+									</Text>
+								</>
+							)}
 						</Box>
 					</Box>
 				</Box>
@@ -132,9 +151,16 @@ export default function HomeScreen() {
 						</Text>
 						<Text
 							style={{ fontFamily: "Inter" }}
-							className='text-sm lg:text-base text-cyan-800/90 h-min'
+							className={cn(
+								"text-sm lg:text-base text-cyan-800/90 h-min",
+								state.isError && "text-red-500"
+							)}
 						>
-							3.000ml
+							{state.isLoading && "..."}
+							{state.isError && "Erro"}
+							{!state.isLoading && !state.isError && data
+								? data.goal
+								: "Sem meta"}
 						</Text>
 					</Box>
 					<UpdateGoal />
@@ -159,7 +185,11 @@ export default function HomeScreen() {
 					</Box>
 
 					<Box className='flex flex-row justify-between'>
-						<Button className=' bg-gradient-to-r from-cyan-800 to-cyan-900 h-8'>
+						<Button
+							className=' bg-gradient-to-r from-cyan-800 to-cyan-900 h-8'
+							isDisabled={state.isError}
+							onPress={() => handler.dose.add.mutate({ dose: 50 })}
+						>
 							<ButtonText
 								style={{ fontFamily: "Inter" }}
 								className='text-white text-xs font-medium'
@@ -167,7 +197,11 @@ export default function HomeScreen() {
 								+50 ml
 							</ButtonText>
 						</Button>
-						<Button className=' bg-gradient-to-r from-cyan-800 to-cyan-900 h-8'>
+						<Button
+							className=' bg-gradient-to-r from-cyan-800 to-cyan-900 h-8'
+							isDisabled={state.isError}
+							onPress={() => handler.dose.add.mutate({ dose: 100 })}
+						>
 							<ButtonText
 								style={{ fontFamily: "Inter" }}
 								className='text-white text-xs font-medium'
@@ -175,7 +209,11 @@ export default function HomeScreen() {
 								+100 ml
 							</ButtonText>
 						</Button>
-						<Button className='bg-gradient-to-r from-cyan-800 to-cyan-900 h-8'>
+						<Button
+							className='bg-gradient-to-r from-cyan-800 to-cyan-900 h-8'
+							isDisabled={state.isError}
+							onPress={() => handler.dose.add.mutate({ dose: 250 })}
+						>
 							<ButtonText
 								style={{ fontFamily: "Inter" }}
 								className='text-white text-xs font-medium'
@@ -195,48 +233,90 @@ export default function HomeScreen() {
 				>
 					Registros
 				</Text>
-				<Box className='flex flex-col items-center'>
-					<Icon
-						as={MilkOffIcon}
-						size='md'
-						className='text-cyan-900 opacity-20'
-					/>
-					<Text style={{ fontFamily: "Inter" }} className='text-cyan-900'>
-						Sem registros por hoje...
-					</Text>
-					<Text
-						style={{ fontFamily: "Inter" }}
-						className='text-cyan-900/60 text-sm'
-					>
-						Você está se hidratando?
-					</Text>
-				</Box>
-
-				<ScrollView style={{ maxHeight: HISTORY_HEIGHT }}>
-					{/* {Array.from({ length: 20 }, (_, index) => (
-						<Box className='flex flex-row justify-between items-center'>
-							<Text
+				{state.isLoading && (
+					<Box>
+						{Array.from({ length: 4 }, (_, index) => (
+							<Box
 								key={index}
-								style={{ fontFamily: "Inter" }}
-								className='text-sm py-0.5'
+								className='flex flex-row justify-between items-center py-0.5'
 							>
-								Teste {index + 1}
-							</Text>
-							<Box className="flex flex-row gap-2 items-center">
-							
-							<Text
-							key={index + 1}
-							style={{ fontFamily: "Inter" }}
-							className='text-[13px] py-0.5 mr-1'
-							>
-							10/01/2024
-							</Text>
-
-
+								<SkeletonText className='h-[14px] rounded w-1/4' />
+								<Box className='flex flex-row gap-2 items-center'>
+									<SkeletonText className='h-[13px] rounded w-[20px]' />
+									<SkeletonText className='h-[20px] w-[20px] rounded-full' />
+								</Box>
 							</Box>
-						</Box>
-					))} */}
-				</ScrollView>
+						))}
+					</Box>
+				)}
+
+				{!state.isLoading && state.isError && (
+					<Box className='flex flex-col items-center'>
+						<Icon as={X} size='xl' className='text-red-500 opacity-60' />
+					</Box>
+				)}
+
+				{!state.isLoading && !state.isError && data?.doses.length === 0 && (
+					<Box className='flex flex-col items-center'>
+						<Icon
+							as={MilkOffIcon}
+							size='xl'
+							className='text-cyan-900 opacity-60'
+						/>
+						<Text style={{ fontFamily: "Inter" }} className='text-cyan-900'>
+							Sem registros por hoje...
+						</Text>
+						<Text
+							style={{ fontFamily: "Inter" }}
+							className='text-cyan-900/60 text-sm'
+						>
+							Você está se hidratando?
+						</Text>
+					</Box>
+				)}
+
+				{!state.isLoading &&
+					!state.isError &&
+					data &&
+					data.doses.length > 0 && (
+						<ScrollView style={{ maxHeight: HISTORY_HEIGHT }}>
+							{data.doses.map((dose, index) => (
+								<Box
+									key={dose.id}
+									className='flex flex-row justify-between items-center'
+								>
+									<Text
+										key={index}
+										style={{ fontFamily: "Inter" }}
+										className='text-sm py-0.5'
+									>
+										{dose.mls}ml
+									</Text>
+									<Box className='flex flex-row gap-2 items-center'>
+										<Text
+											key={index + 1}
+											style={{ fontFamily: "Inter" }}
+											className='text-[13px] py-0.5 mr-1'
+										>
+											{dose.date}
+										</Text>
+
+										<Button
+											size='xs'
+											variant='solid'
+											action='negative'
+											onPress={() =>
+												handler.dose.delete.mutate({ id: dose.id })
+											}
+											isDisabled={state.disableInteraction}
+										>
+											<ButtonIcon as={Trash} />
+										</Button>
+									</Box>
+								</Box>
+							))}
+						</ScrollView>
+					)}
 			</Box>
 
 			<ImportanceModal />

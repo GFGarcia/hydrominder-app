@@ -1,4 +1,3 @@
-import { useRef, useState } from "react";
 import { Button, ButtonText } from "../ui/button";
 import {
 	Modal,
@@ -12,18 +11,13 @@ import { Heading } from "../ui/heading";
 import { CloseIcon, Icon } from "../ui/icon";
 import { Text } from "../ui/text";
 import { Input, InputField } from "../ui/input";
-import { useDebounceCallback } from "usehooks-ts";
-import { produce } from "immer";
-import { useMutation } from "@tanstack/react-query";
-import { KEYS_ENUM } from "@/constants/Keys";
-import { updateTodayGoal } from "@/services/api/goal";
-import { Toast, ToastDescription, ToastTitle, useToast } from "../ui/toast";
+import { Toast, ToastDescription, ToastTitle } from "../ui/toast";
 import { useUpdateGoal } from "./useUpdateGoal";
 import { Divider } from "../ui/divider";
 import { Box } from "../ui/box";
 
 export function UpdateGoal() {
-	const { toast, goal, modal, state, handler } = useUpdateGoal();
+	const { toast, goal, disableInteraction, modal, handler } = useUpdateGoal();
 
 	const TOAST = {
 		SUCCESS: toast.show({
@@ -61,7 +55,7 @@ export function UpdateGoal() {
 
 	const handleSubmit = async () => {
 		if (!goal.current) return;
-		const hasSubmitted = await handler.mutateAsync({ goal: goal.current });
+		const hasSubmitted = await handler.update({ goal: goal.current });
 
 		if (!hasSubmitted.message) {
 			return <TOAST.ERROR />;
@@ -75,7 +69,7 @@ export function UpdateGoal() {
 				onPress={modal.open}
 				size='sm'
 				className='bg-gradient-to-r from-cyan-800 to-cyan-900'
-				disabled={state.disableInteraction}
+				disabled={disableInteraction}
 			>
 				<ButtonText
 					style={{ fontFamily: "Inter" }}
@@ -110,11 +104,13 @@ export function UpdateGoal() {
 						</Text>
 
 						<Box>
-							<InputField
-								type='text'
-								value={String(goal.current)}
-								onChangeText={handler.changeInput}
-							/>
+							<Input isDisabled={disableInteraction}>
+								<InputField
+									type='text'
+									value={String(goal.current)}
+									onChangeText={handler.changeInput}
+								/>
+							</Input>
 							{goal.error && (
 								<Text
 									style={{ fontFamily: "Inter" }}
@@ -133,7 +129,7 @@ export function UpdateGoal() {
 								action='primary'
 								variant='outline'
 								onPress={modal.close}
-								disabled={state.disableInteraction}
+								disabled={disableInteraction}
 							>
 								<ButtonText
 									style={{ fontFamily: "Inter" }}
@@ -145,7 +141,7 @@ export function UpdateGoal() {
 							<Button
 								size='sm'
 								className='bg-green-700'
-								disabled={state.disableInteraction}
+								disabled={disableInteraction}
 								onPress={handleSubmit}
 							>
 								<ButtonText

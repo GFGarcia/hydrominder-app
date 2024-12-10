@@ -15,20 +15,17 @@ type GoalInputState = {
 	error: string | null;
 };
 
-const MOCK_GOAL = 300;
-
 export function useUpdateGoal() {
-	const { isLoading, isError, currentGoal } = useContextSelector(
+	const { disableInteraction, currentGoal, update } = useContextSelector(
 		AppContext,
-		({ isLoading, isError, today }) => ({
-			isLoading,
-			isError,
-			currentGoal: today?.goal,
+		({ state, data, mutation }) => ({
+			disableInteraction: state.disableInteraction,
+			currentGoal: data?.goal,
+			update: mutation.goal.update,
 		})
 	);
 
 	const toast = useToast();
-	const queryClient = useQueryClient();
 
 	const [show, setShow] = useState(false);
 	const [goalInput, setGoalInput] = useState<GoalInputState>({
@@ -57,16 +54,6 @@ export function useUpdateGoal() {
 		);
 	}, 400);
 
-	const { mutateAsync, isPending } = useMutation({
-		mutationKey: [KEYS_ENUM.TODAY],
-		mutationFn: updateTodayGoal,
-		onSuccess: () => {
-			queryClient.invalidateQueries({
-				queryKey: [KEYS_ENUM.TODAY],
-			});
-		},
-	});
-
 	return {
 		toast,
 		modal: {
@@ -78,11 +65,9 @@ export function useUpdateGoal() {
 			current: goalInput.current,
 			error: goalInput.error,
 		},
-		state: {
-			disableInteraction: isLoading || isError || isPending,
-		},
+		disableInteraction,
 		handler: {
-			mutateAsync,
+			update: update.mutateAsync,
 			changeInput: handleChange,
 		},
 	};

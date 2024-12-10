@@ -1,14 +1,19 @@
 import { KEYS_ENUM } from "@/constants/Keys";
+import { useMutations, UseMutationsProps } from "@/hooks/useMutations";
 import { getTodayGoal } from "@/services/api/goal";
-import type { GetTodayGoalApiResponse } from "@/services/schemas/goal/GetTodayGoal";
+import { GetTodayGoalApiResponse } from "@/services/schemas/goal/GetTodayGoal";
 import { useQuery } from "@tanstack/react-query";
 import type { PropsWithChildren } from "react";
 import { createContext } from "use-context-selector";
 
 type AppContextProps = {
-	today: GetTodayGoalApiResponse | undefined;
-	isLoading: boolean;
-	isError: boolean;
+	data: GetTodayGoalApiResponse | undefined;
+	mutation: UseMutationsProps["mutation"];
+	state: {
+		disableInteraction: boolean;
+		isLoading: boolean;
+		isError: boolean;
+	};
 };
 
 export const AppContext = createContext({} as AppContextProps);
@@ -19,8 +24,16 @@ export function AppProvider({ children }: PropsWithChildren) {
 		queryFn: getTodayGoal,
 	});
 
+	const { mutation, isPending } = useMutations();
+
+	const state = {
+		isLoading,
+		isError: !isLoading && isError,
+		disableInteraction: isLoading || isError || isPending,
+	};
+
 	return (
-		<AppContext.Provider value={{ isLoading, isError, today: data }}>
+		<AppContext.Provider value={{ state, data, mutation }}>
 			{children}
 		</AppContext.Provider>
 	);
