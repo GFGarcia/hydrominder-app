@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/form-control";
 import { useLogin } from "./useLogin";
 import { ScreenLayout } from "@/components/ScreenLayout";
+import { Link, LinkText } from "@/components/ui/link";
 
 export default function LoginScreen() {
 	const { form, state, handler } = useLogin();
@@ -98,6 +99,10 @@ export default function LoginScreen() {
 				<Button disabled={state.disableInteraction} onPress={handler.login}>
 					Login
 				</Button>
+
+				<Link href='/app/sign-up.tsx'>
+					<LinkText>Não possui conta?</LinkText>
+				</Link>
 			</Box>
 		</ScreenLayout>
 	);
