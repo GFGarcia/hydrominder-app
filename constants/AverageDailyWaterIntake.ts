@@ -1,0 +1,1 @@
+export const AVERAGE_DAILY_WATER_INTAKE = 2800;
