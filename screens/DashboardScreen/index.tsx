@@ -8,9 +8,9 @@ import { Heading } from "@/components/ui/heading";
 import { LineChart } from "react-native-chart-kit";
 import { ScrollView } from "react-native";
 import { Circle as ProgressCircle } from "react-native-progress";
-import { todayFormattedDate } from "@/functions/todayFormattedDate";
 import { useDashboard } from "./useDashboard";
 import { Spinner } from "@/components/ui/spinner";
+import { TodayHeading } from "@/components/TodayHeading";
 
 export default function DashboardScreen() {
 	const { state, chart, metrics } = useDashboard();
@@ -18,10 +18,7 @@ export default function DashboardScreen() {
 	return (
 		<ScreenLayout>
 			<VStack space='md'>
-				<Box className='flex flex-row items-center gap-2 opacity-70'>
-					<Icon as={CalendarIcon} />
-					<Text>{todayFormattedDate()}</Text>
-				</Box>
+				<TodayHeading />
 
 				<VStack space='2xl'>
 					<Box>
