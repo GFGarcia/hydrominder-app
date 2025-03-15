@@ -1,113 +1,159 @@
-Hydrominder App
+# Hydrominder App
 
-Sobre o Projeto
+## Sobre o Projeto
 
-O Hydrominder App é um aplicativo mobile desenvolvido com Expo e React Native, focado no monitoramento da ingestão de água. O app permite que os usuários registrem suas doses de água, definam metas diárias e configurem lembretes para manter uma hidratação adequada.
+O Hydrominder App é um aplicativo mobile desenvolvido com **Expo** e **React Native**, focado no monitoramento da ingestão de água. O app permite que os usuários:
 
-Tecnologias Utilizadas
+- Registrem suas doses de água.
+- Definem metas diárias.
+- Configurem lembretes para manter uma hidratação adequada.
 
-Frontend
+---
 
-O frontend do aplicativo foi desenvolvido com React Native e Expo, utilizando diversas bibliotecas para garantir uma experiência moderna e eficiente:
+## Tecnologias Utilizadas
 
-Framework: React Native (com Expo)
+### Frontend
 
-Navegação: Expo Router
+O frontend do aplicativo foi desenvolvido com **React Native** e **Expo**, utilizando diversas bibliotecas para garantir uma experiência moderna e eficiente:
 
-Estilização: Tailwind CSS + NativeWind
+- **Framework**: React Native (com Expo)
+- **Navegação**: Expo Router
+- **Estilização**: Tailwind CSS + NativeWind
+- **Componentes UI**: Gluestack UI, React Native Paper
+- **Gerenciamento de Estado**: Zustand, React Query
+- **Formulários e Validação**: React Hook Form, Zod
+- **Gráficos e Visualização de Dados**: React Native Chart Kit
+- **Animações**: React Native Reanimated, Legend Motion
+- **Ícones**: Lucide React Native, React Native Vector Icons
+- **Notificações**: Expo Notifications
+- **Armazenamento Local**: Async Storage
 
-Componentes UI: Gluestack UI, React Native Paper
+### Backend
 
-Gerenciamento de Estado: Zustand, React Query
+O backend do aplicativo utiliza **Supabase**, que atua como banco de dados e serviço de autenticação em tempo real. As principais funcionalidades incluem:
 
-Formulários e Validação: React Hook Form, Zod
+- **Banco de Dados**: Supabase (PostgreSQL)
+- **Autenticação**: Supabase Auth
+- **API REST**: Gerada automaticamente pelo Supabase
+- **Manipulação de Arquivos**: Expo Image Picker
 
-Gráficos e Visualização de Dados: React Native Chart Kit
+---
 
-Animações: React Native Reanimated, Legend Motion
-
-Ícones: Lucide React Native, React Native Vector Icons
-
-Notificações: Expo Notifications
-
-Armazenamento Local: Async Storage
-
-Backend
-
-O backend do aplicativo utiliza Supabase, que atua como banco de dados e serviço de autenticação em tempo real. As principais funcionalidades incluem:
-
-Banco de Dados: Supabase (PostgreSQL)
-
-Autenticação: Supabase Auth
-
-API REST: Gerada automaticamente pelo Supabase
-
-Manipulação de Arquivos: Expo Image Picker
-
-Estrutura do Banco de Dados
+## Estrutura do Banco de Dados
 
 O banco de dados do Hydrominder App é modelado no Supabase e consiste nas seguintes tabelas:
 
-profiles
+### `profiles`
 
 Armazena informações dos perfis de usuários.
 
-id (UUID) - Identificador único
+- **id** (UUID) - Identificador único
+- **updated_at** (timestampz) - Data de atualização
+- **username** (text) - Nome do usuário
+- **avatar_url** (text) - URL do avatar do usuário
+- **Relacionamento**: Ligado a `auth.users.id`
 
-updated_at (timestampz) - Data de atualização
-
-username (text) - Nome do usuário
-
-avatar_url (text) - URL do avatar do usuário
-
-Relacionamento: Ligado a auth.users.id
-
-doses
+### `doses`
 
 Armazena os registros de ingestão de água.
 
-id (int8) - Identificador único
+- **id** (int8) - Identificador único
+- **dose** (int4) - Quantidade de água ingerida (ml)
+- **user_id** (UUID) - Referência ao usuário
+- **created_at** (timestampz) - Data e hora do registro
+- **Relacionamento**: Ligado a `auth.users.id`
 
-dose (int4) - Quantidade de água ingerida (ml)
-
-user_id (UUID) - Referência ao usuário
-
-created_at (timestampz) - Data e hora do registro
-
-Relacionamento: Ligado a auth.users.id
-
-goals
+### `goals`
 
 Armazena as metas diárias de ingestão de água.
 
-id (int8) - Identificador único
+- **id** (int8) - Identificador único
+- **goal** (int4) - Meta de ingestão (ml)
+- **user_id** (UUID) - Referência ao usuário
+- **created_at** (date) - Data de criação
+- **updated_at** (date) - Data de atualização
+- **Relacionamento**: Ligado a `auth.users.id`
 
-goal (int4) - Meta de ingestão (ml)
-
-user_id (UUID) - Referência ao usuário
-
-created_at (date) - Data de criação
-
-updated_at (date) - Data de atualização
-
-Relacionamento: Ligado a auth.users.id
-
-alarms
+### `alarms`
 
 Armazena os lembretes para ingestão de água.
 
-id (int8) - Identificador único
+- **id** (int8) - Identificador único
+- **user_id** (UUID) - Referência ao usuário
+- **created_at** (timestampz) - Data de criação
+- **hour** (int2) - Hora do lembrete
+- **min** (int2) - Minuto do lembrete
+- **Relacionamento**: Ligado a `auth.users.id`
 
-user_id (UUID) - Referência ao usuário
+---
 
-created_at (timestampz) - Data de criação
+## Configuração do Supabase
 
-hour (int2) - Hora do lembrete
+Para configurar o Supabase no projeto, siga os passos abaixo:
 
-min (int2) - Minuto do lembrete
+1. **Crie um Projeto no Supabase**:
 
-Relacionamento: Ligado a auth.users.id
+   - Acesse [Supabase](https://supabase.com/) e crie um novo projeto.
+   - Anote a **URL** e a **Chave Pública (anon key)** do projeto.
 
-Considerações Finais
+2. **Configure as Variáveis de Ambiente**:
+
+   - No diretório raiz do projeto, crie um arquivo `.env` com as seguintes variáveis:
+     ```env
+     SUPABASE_URL=sua_url_do_supabase
+     SUPABASE_ANON_KEY=sua_chave_anonima
+     ```
+
+3. **Crie as Tabelas no Supabase**:
+
+   - No painel do Supabase, acesse o **SQL Editor** e execute o seguinte script para criar as tabelas:
+
+     ```sql
+     CREATE TABLE profiles (
+       id UUID REFERENCES auth.users ON DELETE CASCADE,
+       updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+       username TEXT,
+       avatar_url TEXT,
+       PRIMARY KEY (id)
+     );
+
+     CREATE TABLE doses (
+       id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+       dose INTEGER,
+       user_id UUID REFERENCES auth.users ON DELETE CASCADE,
+       created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+     );
+
+     CREATE TABLE goals (
+       id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+       goal INTEGER,
+       user_id UUID REFERENCES auth.users ON DELETE CASCADE,
+       created_at DATE DEFAULT NOW(),
+       updated_at DATE DEFAULT NOW()
+     );
+
+     CREATE TABLE alarms (
+       id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+       user_id UUID REFERENCES auth.users ON DELETE CASCADE,
+       created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+       hour SMALLINT,
+       min SMALLINT
+     );
+     ```
+
+4. **Habilite o Armazenamento de Arquivos**:
+
+   - No painel do Supabase, acesse **Storage** e crie um bucket chamado `avatars` para armazenar as imagens de perfil dos usuários.
+
+5. **Configure as Permissões**:
+   - Certifique-se de que as tabelas e o bucket de armazenamento tenham as permissões corretas para acesso público ou autenticado, dependendo da sua necessidade.
+
+---
+
+## Considerações Finais
 
 O Hydrominder App foi projetado para ser um aplicativo 100% mobile, proporcionando uma interface intuitiva e eficiente para o gerenciamento da hidratação diária. O uso do Supabase para backend permite uma implementação rápida e escalável, ideal para provas de conceito e projetos ágeis.
+
+---
+
+**Nota**: Certifique-se de substituir `sua_url_do_supabase` e `sua_chave_anonima` pelos valores reais do seu projeto no Supabase.
