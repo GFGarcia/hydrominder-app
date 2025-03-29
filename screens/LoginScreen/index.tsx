@@ -1,5 +1,5 @@
 import { SafeAreaView } from "react-native";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonText } from "@/components/ui/button";
 import {
 	Avatar,
 	AvatarFallbackText,
@@ -27,81 +27,93 @@ import {
 import { useLogin } from "./useLogin";
 import { ScreenLayout } from "@/components/ScreenLayout";
 import { Link, LinkText } from "@/components/ui/link";
+import Logo from "../../assets/images/icon.png";
+import { Image } from "@/components/ui/image";
 
 export default function LoginScreen() {
 	const { form, state, handler } = useLogin();
 
 	return (
 		<ScreenLayout>
-			<Box className='items-center gap-3'>
-				<FormControl
-					isDisabled={state.disableInteraction}
-					isInvalid={!!form.errors.email}
-				>
-					<FormControlLabel>
-						<Text>Email</Text>
-					</FormControlLabel>
-					<Controller
-						control={form.control}
-						name='email'
-						render={({ field }) => (
-							<Input>
-								<InputSlot>
-									<InputIcon
-										as={Mail}
-										color={!!form.errors.email ? "red" : "#FFF"}
+			<Box className='items-center gap-10'>
+				<Image size='xl' source={Logo} />
+				<Box className='gap-3 w-full items-center'>
+					<FormControl
+						className='w-full'
+						isDisabled={state.disableInteraction}
+						isInvalid={!!form.errors.email}
+					>
+						<FormControlLabel>
+							<Text>Email</Text>
+						</FormControlLabel>
+						<Controller
+							control={form.control}
+							name='email'
+							render={({ field }) => (
+								<Input className='border-white'>
+									<InputSlot className='pl-2'>
+										<InputIcon
+											as={Mail}
+											color={!!form.errors.email ? "red" : "#FFF"}
+										/>
+									</InputSlot>
+									<InputField {...field} placeholder='Email' />
+								</Input>
+							)}
+						/>
+						<FormControlError>
+							<FormControlErrorText>
+								{form.errors.email?.message}
+							</FormControlErrorText>
+						</FormControlError>
+					</FormControl>
+
+					<FormControl
+						className='w-full'
+						isDisabled={state.disableInteraction}
+						isInvalid={!!form.errors.password}
+					>
+						<FormControlLabel>
+							<Text>Senha</Text>
+						</FormControlLabel>
+						<Controller
+							control={form.control}
+							name='password'
+							render={({ field }) => (
+								<Input className='border-white'>
+									<InputSlot className='pl-2' onPress={handler.togglePassword}>
+										<InputIcon
+											as={Lock}
+											color={form.errors.password ? "red" : "#FFF"}
+										/>
+									</InputSlot>
+									<InputField
+										{...field}
+										placeholder='Digite sua senha'
+										secureTextEntry={state.securePassword === "password"}
 									/>
-								</InputSlot>
-								<InputField {...field} placeholder='Email' />
-							</Input>
-						)}
-					/>
-					<FormControlError>
-						<FormControlErrorText>
-							{form.errors.email?.message}
-						</FormControlErrorText>
-					</FormControlError>
-				</FormControl>
+								</Input>
+							)}
+						/>
+						<FormControlError>
+							<FormControlErrorText>
+								{form.errors.password?.message}
+							</FormControlErrorText>
+						</FormControlError>
+					</FormControl>
 
-				<FormControl
-					isDisabled={state.disableInteraction}
-					isInvalid={!!form.errors.password}
-				>
-					<FormControlLabel>
-						<Text>Senha</Text>
-					</FormControlLabel>
-					<Controller
-						control={form.control}
-						name='password'
-						render={({ field }) => (
-							<Input>
-								<InputSlot onPress={handler.togglePassword}>
-									<InputIcon
-										as={Lock}
-										color={form.errors.password ? "red" : "#FFF"}
-									/>
-								</InputSlot>
-								<InputField
-									{...field}
-									placeholder='Digite sua senha'
-									secureTextEntry={state.securePassword === "password"}
-								/>
-							</Input>
-						)}
-					/>
-					<FormControlError>
-						<FormControlErrorText>
-							{form.errors.password?.message}
-						</FormControlErrorText>
-					</FormControlError>
-				</FormControl>
-
-				<Button disabled={state.disableInteraction} onPress={handler.login}>
-					Login
-				</Button>
-
+					<Button
+						className='w-fit mt-2'
+						disabled={state.disableInteraction}
+						onPress={handler.login}
+					>
+						<ButtonText className='text-white'>LOGIN</ButtonText>
+					</Button>
+				</Box>
 				<Link href='/app/sign-up.tsx'>
-					<LinkText>Não possui conta?</LinkText>
+					<LinkText className='text-white opacity-90'>
+						Não possui conta?
+					</LinkText>
 				</Link>
 			</Box>
 		</ScreenLayout>
