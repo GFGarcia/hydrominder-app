@@ -102,11 +102,6 @@ export function ApplicationProvider({ children }: PropsWithChildren) {
 	const allQueries = useQueries({
 		queries: [
 			{
-				queryKey: [KEYS_ENUM.SESSION],
-				queryFn: getUserSession,
-				enabled: !session,
-			},
-			{
 				queryKey: [KEYS_ENUM.PROFILE],
 				queryFn: getUserProfileData,
 				enabled: !!session,

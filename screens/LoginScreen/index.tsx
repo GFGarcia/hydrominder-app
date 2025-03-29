@@ -36,7 +36,7 @@ export default function LoginScreen() {
 	return (
 		<ScreenLayout>
 			<Box className='items-center gap-10'>
-				<Image size='xl' source={Logo} />
+				<Image size='xl' source={Logo} alt='Hydrominder Logo' />
 				<Box className='gap-3 w-full items-center'>
 					<FormControl
 						className='w-full'
