@@ -29,6 +29,7 @@ import { ScreenLayout } from "@/components/ScreenLayout";
 import { Link, LinkText } from "@/components/ui/link";
 import Logo from "../../assets/images/icon.png";
 import { Image } from "@/components/ui/image";
+import { EyeIcon, EyeOffIcon } from "@/components/ui/icon";
 
 export default function LoginScreen() {
 	const { form, state, handler } = useLogin();
@@ -38,69 +39,80 @@ export default function LoginScreen() {
 			<Box className='items-center gap-10'>
 				<Image size='xl' source={Logo} alt='Hydrominder Logo' />
 				<Box className='gap-3 w-full items-center'>
-					<FormControl
-						className='w-full'
-						isDisabled={state.disableInteraction}
-						isInvalid={!!form.errors.email}
-					>
-						<FormControlLabel>
-							<Text>Email</Text>
-						</FormControlLabel>
-						<Controller
-							control={form.control}
-							name='email'
-							render={({ field }) => (
-								<Input className='border-white'>
+					<Controller
+						control={form.control}
+						name='email'
+						render={({ field: { onChange, onBlur, value } }) => (
+							<FormControl
+								className='w-full'
+								isDisabled={state.disableInteraction}
+								isInvalid={!!form.errors.password}
+							>
+								<FormControlLabel>
+									<FormControlLabelText>Email</FormControlLabelText>
+								</FormControlLabel>
+								<Input>
 									<InputSlot className='pl-2'>
 										<InputIcon
 											as={Mail}
 											color={!!form.errors.email ? "red" : "#FFF"}
 										/>
 									</InputSlot>
-									<InputField {...field} placeholder='Email' />
+									<InputField
+										value={value}
+										onBlur={onBlur}
+										onChangeText={onChange}
+										placeholder='Email'
+									/>
 								</Input>
-							)}
-						/>
-						<FormControlError>
-							<FormControlErrorText>
-								{form.errors.email?.message}
-							</FormControlErrorText>
-						</FormControlError>
-					</FormControl>
+								<FormControlError>
+									<FormControlErrorText>
+										{form.errors.email?.message}
+									</FormControlErrorText>
+								</FormControlError>
+							</FormControl>
+						)}
+					/>
 
-					<FormControl
-						className='w-full'
-						isDisabled={state.disableInteraction}
-						isInvalid={!!form.errors.password}
-					>
-						<FormControlLabel>
-							<Text>Senha</Text>
-						</FormControlLabel>
-						<Controller
-							control={form.control}
-							name='password'
-							render={({ field }) => (
-								<Input className='border-white'>
+					<Controller
+						control={form.control}
+						name='password'
+						render={({ field: { onChange, onBlur, value } }) => (
+							<FormControl
+								className='w-full'
+								isDisabled={state.disableInteraction}
+								isInvalid={!!form.errors.password}
+							>
+								<FormControlLabel>
+									<FormControlLabelText>Senha</FormControlLabelText>
+								</FormControlLabel>
+								<Input>
 									<InputSlot className='pl-2' onPress={handler.togglePassword}>
 										<InputIcon
-											as={Lock}
+											as={
+												state.securePassword === "password"
+													? EyeOffIcon
+													: EyeIcon
+											}
 											color={form.errors.password ? "red" : "#FFF"}
 										/>
 									</InputSlot>
 									<InputField
-										{...field}
+										onBlur={onBlur}
+										onChangeText={onChange}
+										value={value}
 										placeholder='Digite sua senha'
 										secureTextEntry={state.securePassword === "password"}
 									/>
 								</Input>
-							)}
-						/>
-						<FormControlError>
-							<FormControlErrorText>
-								{form.errors.password?.message}
-							</FormControlErrorText>
-						</FormControlError>
-					</FormControl>
+								<FormControlError>
+									<FormControlErrorText>
+										{form.errors.password?.message}
+									</FormControlErrorText>
+								</FormControlError>
+							</FormControl>
+						)}
+					/>
 
 					<Button
 						className='w-fit mt-2'

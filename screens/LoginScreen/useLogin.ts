@@ -40,6 +40,7 @@ export function useLogin() {
 		control,
 		trigger,
 		getValues,
+		handleSubmit,
 		formState: { errors },
 	} = useForm<Login>({
 		defaultValues: {
@@ -48,11 +49,7 @@ export function useLogin() {
 		},
 	});
 
-	const handleLogin = async () => {
-		const isValid = trigger();
-		if (!isValid) return;
-		const { email, password } = getValues();
-
+	const handleLogin = handleSubmit(async ({ email, password }) => {
 		const { data } = await signIn.mutateAsync({ email, password });
 
 		if (!data) {
@@ -79,7 +76,7 @@ export function useLogin() {
 		setTimeout(() => {
 			router.push("/(tabs)");
 		}, 600);
-	};
+	});
 
 	return {
 		state: { ...state, securePassword },
